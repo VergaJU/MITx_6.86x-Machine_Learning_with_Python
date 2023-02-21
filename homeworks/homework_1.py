@@ -1,7 +1,7 @@
 import numpy as np
 
 def perceptron(theta, theta0, x, y):
-    result = y*(np.dot(theta,x))
+    result = y*(np.dot(theta,x)+theta0)
     if result <= 0:
         theta = theta + (y*x)
         theta0 = theta0 + y
@@ -35,8 +35,8 @@ x5 = np.array([1, -2])
 y5 = -1
 
 ### Starting point
-theta = np.array([0,0])
-theta0 = 0
+theta = np.array([-1,1])
+theta0 = -.1
 ### Starting from x1:
 theta, theta0 = perceptron(theta, theta0, x1, y1)
 theta, theta0 = perceptron(theta, theta0, x2, y2)
