@@ -106,4 +106,6 @@ def test_perceptron_pegasos():
                                                 f" {test_score}, but on skitlearn is {sk_test_score}"
     pass
 
-
+test_perceptron()
+test_perceptron_average()
+test_perceptron_pegasos()

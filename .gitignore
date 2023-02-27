@@ -115,3 +115,4 @@ dmypy.json
 *.md
 *.svg
 project1/sentiment_analysis/log
+project1/sentiment_analysis/.~lock.toy_data.tsv#

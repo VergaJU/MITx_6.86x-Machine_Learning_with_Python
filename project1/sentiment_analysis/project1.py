@@ -219,7 +219,6 @@ def pegasos_single_step_update(
         completed.
     """
     agreement = label * (np.dot(feature_vector, theta) + theta_0)
-    epsilon = 10**(-13)
     if agreement <= 1:
         theta = (1-eta*L)*theta + (eta *label * feature_vector)
         theta_0 = theta_0+(eta*label)   
@@ -307,7 +306,16 @@ def classify(feature_matrix, theta, theta_0):
         should be considered a positive classification.
     """
     # Your code here
-    raise NotImplementedError
+    classified = np.dot(feature_matrix,theta) + theta_0
+    epsilon = 10**(-13)
+    classified = np.where(classified<=epsilon, -1, 1)
+    #for f in range(len(classified)):
+    #    if abs(classified[f]) <= epsilon or classified[f] < 0:
+    #        classified[f] = -1
+    #    else:
+    #        classified[f] = 1
+
+    return classified
 
 
 def classifier_accuracy(
@@ -344,7 +352,13 @@ def classifier_accuracy(
         accuracy of the trained classifier on the validation data.
     """
     # Your code here
-    raise NotImplementedError
+    trained= classifier(train_feature_matrix, train_labels, **kwargs)
+    train_results = classify(train_feature_matrix, trained[0], trained[1])
+    train_accuracy = accuracy(train_results, train_labels)
+    val_results = classify(val_feature_matrix, trained[0], trained[1])
+    val_accuracy = accuracy(val_results, val_labels)
+    #print(f"Train accuracy {round(train_accuracy,2)}\nVal accuracy {round(val_accuracy,2)}")
+    return train_accuracy, val_accuracy
 
 
 
@@ -363,7 +377,7 @@ def extract_words(text):
 
 
 
-def bag_of_words(texts, remove_stopword=False):
+def bag_of_words(texts,remove_stopword=True):
     """
     NOTE: feel free to change this code as guided by Section 3 (e.g. remove
     stopwords, add bigrams etc.)
@@ -375,8 +389,9 @@ def bag_of_words(texts, remove_stopword=False):
         integer `index`.
     """
     # Your code here
-    raise NotImplementedError
-
+    with open('stopwords.txt', 'r') as myfile:
+        stopword = myfile.read()
+        stopword = stopword.split()
     indices_by_word = {}  # maps word to unique index
     for text in texts:
         word_list = extract_words(text)
@@ -384,12 +399,13 @@ def bag_of_words(texts, remove_stopword=False):
             if word in indices_by_word: continue
             if word in stopword: continue
             indices_by_word[word] = len(indices_by_word)
+    print(len(indices_by_word))
 
     return indices_by_word
 
 
 
-def extract_bow_feature_vectors(reviews, indices_by_word, binarize=True):
+def extract_bow_feature_vectors(reviews, indices_by_word, binarize=False):
     """
     Args:
         `reviews` - a list of natural language strings
@@ -400,17 +416,15 @@ def extract_bow_feature_vectors(reviews, indices_by_word, binarize=True):
         in the dictionary.
     """
     # Your code here
-    raise NotImplementedErrort
-
     feature_matrix = np.zeros([len(reviews), len(indices_by_word)], dtype=np.float64)
     for i, text in enumerate(reviews):
         word_list = extract_words(text)
         for word in word_list:
             if word not in indices_by_word: continue
-            feature_matrix[i, indices_by_word[word]] += 1
+            feature_matrix[i, indices_by_word[word]] = word_list.count(word)
     if binarize:
         # Your code here
-        raise NotImplementedErrort
+        raise NotImplementedError
     return feature_matrix
 
 
