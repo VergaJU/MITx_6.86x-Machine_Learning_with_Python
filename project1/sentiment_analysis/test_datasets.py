@@ -42,21 +42,68 @@ def create_random_dataset(seed=999):
 
 
 def test_perceptron():
-    """This test will run the perceptron with 10 iterations"""
+    """This test will run the perceptron with 10 iterations.
+    It runs the skitlearn score function to give a value"""
     max_iterations = 10
     toy_features, toy_labels = create_random_dataset()
     thetas_perceptron = p1.perceptron(toy_features, toy_labels, T=max_iterations)
-    # plot_toy_data("Jacopo", features=toy_features, labels=toy_labels,
-    #              thetas=thetas_perceptron)
+
     p = Perceptron(random_state=42, max_iter=max_iterations)
     p.fit(toy_features, toy_labels)
-    # theta = (p.coef_[0], p.eta0)
-    # plot_toy_data("Sklearn", features=toy_features, labels=toy_labels,
-    #              thetas=theta)
+    sk_predictions_test = p.predict(toy_features)
+    sk_test_score = accuracy_score(sk_predictions_test, toy_labels)
+    # Forcing the perceptron to fit the previous value
     p.coef_[0] = thetas_perceptron[0]
     p.eta0 = thetas_perceptron[1]
     predictions_test = p.predict(toy_features)
     test_score = accuracy_score(predictions_test, toy_labels)
     print("score on test data: ", test_score)
-
+    assert abs(test_score-sk_test_score) < 0.1, f"The score on p1.perceptron was" \
+                                                f" {test_score}, but on skitlearn is {sk_test_score}"
     pass
+
+
+def test_perceptron_average():
+    """This test will run the perceptron with 10 iterations.
+    It runs the skitlearn score function to give a value"""
+    max_iterations = 10
+    toy_features, toy_labels = create_random_dataset()
+    thetas_perceptron = p1.average_perceptron(toy_features, toy_labels, T=max_iterations)
+
+    p = Perceptron(random_state=42, max_iter=max_iterations)
+    p.fit(toy_features, toy_labels)
+    sk_predictions_test = p.predict(toy_features)
+    sk_test_score = accuracy_score(sk_predictions_test, toy_labels)
+    # Forcing the perceptron to fit the previous value
+    p.coef_[0] = thetas_perceptron[0]
+    p.eta0 = thetas_perceptron[1]
+    predictions_test = p.predict(toy_features)
+    test_score = accuracy_score(predictions_test, toy_labels)
+    print("score on test data: ", test_score)
+    assert abs(test_score-sk_test_score) < 0.1, f"The score on p1.perceptron was" \
+                                                f" {test_score}, but on skitlearn is {sk_test_score}"
+    pass
+
+def test_perceptron_pegasos():
+    """This test will run the perceptron with 10 iterations.
+    It runs the skitlearn score function to give a value"""
+    max_iterations = 10
+    L = 0.2
+    toy_features, toy_labels = create_random_dataset()
+    thetas_perceptron = p1.pegasos(feature_matrix=toy_features, labels=toy_labels, T=max_iterations, L=L)
+
+    p = Perceptron(random_state=42, max_iter=max_iterations)
+    p.fit(toy_features, toy_labels)
+    sk_predictions_test = p.predict(toy_features)
+    sk_test_score = accuracy_score(sk_predictions_test, toy_labels)
+    # Forcing the perceptron to fit the previous value
+    p.coef_[0] = thetas_perceptron[0]
+    p.eta0 = thetas_perceptron[1]
+    predictions_test = p.predict(toy_features)
+    test_score = accuracy_score(predictions_test, toy_labels)
+    print("score on test data: ", test_score)
+    assert abs(test_score-sk_test_score) < 0.1, f"The score on p1.perceptron was" \
+                                                f" {test_score}, but on skitlearn is {sk_test_score}"
+    pass
+
+
