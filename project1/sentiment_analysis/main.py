@@ -1,6 +1,7 @@
 import project1 as p1
 import utils
 import numpy as np
+import matplotlib.pyplot as plt
 
 #-------------------------------------------------------------------------------
 # Data loading. There is no need to edit code in this section.
@@ -35,20 +36,29 @@ L = 0.2
 #
 def convergence(algorithm):
     T = 5
-    thetas= algorithm(toy_features, toy_labels, T)
-    print(thetas)
-
+    thetas_old = (np.zeros(toy_features.shape[1]),0)
+    while T < 1000:
+        thetas= algorithm(toy_features, toy_labels, T, L)
+        if round(float(thetas_old[0][0]),1) == round(float(thetas[0][0]),1) and round(float(thetas_old[0][1]),1) == round(float(thetas[0][1]),1):
+            print(f"algorithm converged after {T} iterations")
+            break
+        else:
+            thetas_old = thetas
+            T += 5
+        
 
 convergence(p1.perceptron)
+convergence(p1.average_perceptron)
+convergence(p1.pegasos)
 
 def plot_toy_results(algo_name, thetas):
     print('theta for', algo_name, 'is', ', '.join(map(str,list(thetas[0]))))
     print('theta_0 for', algo_name, 'is', str(thetas[1]))
     utils.plot_toy_data(algo_name, toy_features, toy_labels, thetas)
-#
-plot_toy_results('Perceptron', thetas_perceptron)
-plot_toy_results('Average Perceptron', thetas_avg_perceptron)
-plot_toy_results('Pegasos', thetas_pegasos)
+
+#plot_toy_results('Perceptron', thetas_perceptron)
+#plot_toy_results('Average Perceptron', thetas_avg_perceptron)
+#plot_toy_results('Pegasos', thetas_pegasos)
 
 #-------------------------------------------------------------------------------
 # Problem 7
