@@ -83,7 +83,7 @@ def perceptron_single_step_update(
         feature_vector,
         label,
         current_theta,
-        current_theta_0):
+        current_theta_0,*args, **kwargs):
     """
     Updates the classification parameters `theta` and `theta_0` via a single
     step of the perceptron algorithm.  Returns new parameters rather than
@@ -101,10 +101,14 @@ def perceptron_single_step_update(
         the updated offset parameter `theta_0` as a floating point number
     """
     # Your code here
-    epsilon = 0.5
-    agreement = label * np.dot(feature_vector, current_theta) + current_theta_0
-    if agreement <= epsilon:
-        theta = current_theta + label * feature_vector
+
+    agreement = label * (np.dot(feature_vector, current_theta) + current_theta_0)
+    epsilon = 10**(-13)
+    if abs(agreement) <= epsilon:
+        theta = current_theta + (label * feature_vector)
+        theta_0 = current_theta_0 + label
+    elif agreement < 0:
+        theta = current_theta + (label * feature_vector)
         theta_0 = current_theta_0 + label
     else:
         theta = current_theta
@@ -114,7 +118,7 @@ def perceptron_single_step_update(
 
 
 
-def perceptron(feature_matrix, labels, T):
+def perceptron(feature_matrix, labels, T,*args, **kwargs):
     """
     Runs the full perceptron algorithm on a given set of data. Runs T
     iterations through the data set: we do not stop early.
@@ -147,7 +151,7 @@ def perceptron(feature_matrix, labels, T):
 
 
 
-def average_perceptron(feature_matrix, labels, T):
+def average_perceptron(feature_matrix, labels, T,*args, **kwargs):
     """
     Runs the average perceptron algorithm on a given dataset.  Runs `T`
     iterations through the dataset (we do not stop early) and therefore
@@ -193,7 +197,7 @@ def pegasos_single_step_update(
         L,
         eta,
         theta,
-        theta_0):
+        theta_0, *args, **kwargs):
     """
     Updates the classification parameters `theta` and `theta_0` via a single
     step of the Pegasos algorithm.  Returns new parameters rather than
@@ -214,12 +218,20 @@ def pegasos_single_step_update(
         real valued number with the value of theta_0 after the old updated has
         completed.
     """
-    # Your code here
-    raise NotImplementedError
+    agreement = label * (np.dot(feature_vector, theta) + theta_0)
+    epsilon = 10**(-13)
+    if agreement <= 1:
+        theta = (1-eta*L)*theta + (eta *label * feature_vector)
+        theta_0 = theta_0+(eta*label)   
+    else:
+        theta = (1-eta*L)*theta
+        theta_0 = theta_0
+    return (theta, theta_0)
 
 
 
-def pegasos(feature_matrix, labels, T, L):
+
+def pegasos(feature_matrix, labels, T, L,*args, **kwargs):
     """
     Runs the Pegasos algorithm on a given set of data. Runs T iterations
     through the data set, there is no need to worry about stopping early.  For
@@ -247,8 +259,19 @@ def pegasos(feature_matrix, labels, T, L):
         after T iterations through the feature matrix.
     """
     # Your code here
-    raise NotImplementedError
+    count = 1
+    eta = 1/np.sqrt(count)
+    # Your code here
+    thetas = (np.zeros(feature_matrix.shape[1]), 0)
+    for t in range(T):
+        for i in get_order(feature_matrix.shape[0]):
+            thetas = pegasos_single_step_update(feature_matrix[i], labels[i],L,eta,thetas[0], thetas[1])
+        
+            count += 1
+            eta = 1/np.sqrt(count)
 
+    return thetas
+            # Your code here
 
 
 #==============================================================================

@@ -114,3 +114,4 @@ dmypy.json
 .pyre/
 *.md
 *.svg
+project1/sentiment_analysis/log
