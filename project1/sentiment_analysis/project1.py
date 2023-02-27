@@ -137,13 +137,13 @@ def perceptron(feature_matrix, labels, T):
             (found also after T iterations through the feature matrix).
     """
     # Your code here
-    raise NotImplementedError
+    thetas = (np.zeros(feature_matrix.shape[1]), 0)
     for t in range(T):
-        for i in get_order(nsamples):
+        for i in get_order(feature_matrix.shape[0]):
+            thetas = perceptron_single_step_update(feature_matrix[i], labels[i], thetas[0], thetas[1])
+    return thetas
             # Your code here
-            raise NotImplementedError
-    # Your code here
-    raise NotImplementedError
+            #raise NotImplementedError
 
 
 
@@ -174,7 +174,17 @@ def average_perceptron(feature_matrix, labels, T):
             (averaged also over T iterations through the feature matrix).
     """
     # Your code here
-    raise NotImplementedError
+    thetas = (np.zeros(feature_matrix.shape[1]), 0)
+    theta_t = np.zeros([feature_matrix.shape[1],])
+    theta_t0 = 0
+    for t in range(T): # loop through T
+        for i in get_order(feature_matrix.shape[0]): # loop along matrix
+            thetas = perceptron_single_step_update(feature_matrix[i], labels[i], thetas[0], thetas[1]) # update theta and theta0
+            theta_t = np.add(theta_t,thetas[0]) # sum theta inizial and corrected theta
+            theta_t0 += thetas[1] # sum theta0 and theta0 corrected
+    theta_t = np.divide(theta_t, feature_matrix.shape[0]*T) # average theta deviding by n_vectors *T
+    theta_t0 = theta_t0 / (feature_matrix.shape[0]*T)# average theta0 deviding by n_vectors *T
+    return (theta_t, theta_t0)
 
 
 def pegasos_single_step_update(
