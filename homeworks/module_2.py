@@ -1,4 +1,6 @@
 import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
 import project1.sentiment_analysis.project1 as utils
 
 x = np.array([[1,0,1],[1,1,1],[1,1,-1],[-1,1,1]])
@@ -49,6 +51,23 @@ def emp_risk(err):
     R = np.sum(err) / len(err)
     return R
 
+def read_ponts(data):
+    df = pd.read_csv(data)
+    df['label'] = df['labell'].map({'p': 1, 'n': 0})
+    return df
+
+
+def plot_points(df):
+    plt.scatter(x=df.x1, y=df.x2, c=df.label)
+    plt.show()
+
+
+def transform(df):
+    df["transformed"] = (df.x1**2) + 2*(df.x2**2)
+    fig = plt.figure()
+    ax = fig.add_subplot(projection='3d')
+    ax.scatter(xs=df.x1, ys=df.x2, zs=df.transformed, c=df.label)
+    plt.show()
 
 ''''
 def squared_err(x,y,theta):
@@ -80,8 +99,11 @@ def R(x,y,theta):
     return tot_err/x.shape[0]
 '''
 if __name__ == "__main__":
-    err = deviation(x,y,theta)
+    #err = deviation(x,y,theta)
     #err = sq_deviation(err)
-    err = hinge_loss(err)
-    risk = emp_risk(err)
-    print(f"Empirical risk:{risk}")
+    #err = hinge_loss(err)
+    #risk = emp_risk(err)
+    #print(f"Empirical risk:{risk}")
+    df = read_ponts("points.csv")
+    plot_points(df)
+    transform(df)
