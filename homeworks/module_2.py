@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import math
 import project1.sentiment_analysis.project1 as utils
 
 x = np.array([[1,0,1],[1,1,1],[1,1,-1],[-1,1,1]])
@@ -21,9 +22,9 @@ def deviation(x,y,theta):
 
 def sq_deviation(err):
     """
-
-    :param err:
-    :return:
+    Return seuqre deviation devided by 2
+    :param err: errors vectors
+    :return: squared deviation vector
     """
     err = err**2
     err = err/2
@@ -52,22 +53,63 @@ def emp_risk(err):
     return R
 
 def read_ponts(data):
+    """
+    Read data points from lecture 6
+    :param data: path to file
+    :return: pd dataframe with label set as 1 and 0
+    """
     df = pd.read_csv(data)
     df['label'] = df['labell'].map({'p': 1, 'n': 0})
     return df
 
 
 def plot_points(df):
+    """
+    plot 2d scatterplot
+    :param df: data points
+    :return: plot
+    """
     plt.scatter(x=df.x1, y=df.x2, c=df.label)
     plt.show()
 
 
 def transform(df):
+    """
+    Transform feature vector and return 3d scatterplot
+    :param df: data points
+    :return: 3d scatterplot
+    """
     df["transformed"] = (df.x1**2) + 2*(df.x2**2)
     fig = plt.figure()
     ax = fig.add_subplot(projection='3d')
     ax.scatter(xs=df.x1, ys=df.x2, zs=df.transformed, c=df.label)
     plt.show()
+
+def dimensionality(n,k):
+    """
+    evaluate dimensionality feature transformation
+    :param n: number of points (dimension initial vector)
+    :param k:degree
+    :return:dimensions
+    """
+    dims = math.factorial(n+k-1)/(math.factorial(n-1)* math.factorial(k))
+    print(f"Degree: {n}, Original dimension {k}")
+    return dims
+
+def repetition_dims(n,k):
+    """
+    repeat for all dimension from 1 to k
+    :param n: number of points (dimension initial vector)
+    :param k:degree
+    :return:dimensions (sum)
+    """
+    dims = n
+    print(dims)
+    for i in range(2,k+1):
+        dims += dimensionality(n,i)
+    print(dims)
+    return dims
+
 
 ''''
 def squared_err(x,y,theta):
@@ -104,6 +146,7 @@ if __name__ == "__main__":
     #err = hinge_loss(err)
     #risk = emp_risk(err)
     #print(f"Empirical risk:{risk}")
-    df = read_ponts("points.csv")
-    plot_points(df)
-    transform(df)
+    #df = read_ponts("points.csv")
+    #plot_points(df)
+    #transform(df)
+    repetition_dims(150, 3)
