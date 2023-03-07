@@ -111,6 +111,17 @@ def repetition_dims(n,k):
     return dims
 
 
+
+def rbk(x,y):
+    """
+    Evaluate radial basis kernel function between 2 vectors of equal dimension
+    :param x: vector
+    :param y: vector
+    :return: scalar
+    """
+    exponent = -.5 * (np.linalg.norm((x-y))**2)
+    exponent = np.exp(exponent)
+    return exponent
 ''''
 def squared_err(x,y,theta):
     """
@@ -149,4 +160,7 @@ if __name__ == "__main__":
     #df = read_ponts("points.csv")
     #plot_points(df)
     #transform(df)
-    repetition_dims(150, 3)
+    #repetition_dims(150, 3)
+    x = np.array([1,0,0])
+    y = np.array([0,1,0])
+    print(rbk(x,y))
