@@ -117,3 +117,9 @@ dmypy.json
 project1/sentiment_analysis/log
 project1/sentiment_analysis/.~lock.toy_data.tsv#
 .idea/
+*.gz
+project2/mnist/part2-twodigit/sample_images/
+project2/mnist/.DS_Store
+project2/mnist/._.DS_Store
+project2/mnist/part2-twodigit/._.DS_Store
+project2/mnist/part2-twodigit/.DS_Store
