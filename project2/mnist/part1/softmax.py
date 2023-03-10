@@ -23,7 +23,6 @@ def compute_probabilities(X, theta, temp_parameter):
     """
     Computes, for each datapoint X[i], the probability that X[i] is labeled as j
     for j = 0, 1, ..., k-1
-    TODO: Test np.vectorize()
 
     Args:
         X - (n, d) NumPy array (n datapoints each with d features)
@@ -33,8 +32,18 @@ def compute_probabilities(X, theta, temp_parameter):
         H - (k, n) NumPy array, where each entry H[j][i] is the probability that X[i] is labeled as j
     """
     #YOUR CODE HERE
-    first_term = 1/(np.exp(np.sum(X.dot(theta.T).T)/ temp_parameter))
-    print(first_term)
+    def denominator(x,theta,t):
+        c = np.dot(np.max(theta, axis=0),x)/t # find max values in theta column wise, compute dot prod and devide by temp_parameter
+        theta_dot = np.e ** ((np.dot(theta,x)/t) - c) ## create vector wit e^exponent
+        denom = 1/np.sum(theta_dot) # compute denominator
+        probs = denom * theta_dot # compute softmax for x
+        return probs
+
+    H =np.apply_along_axis(denominator, axis=1, arr=X, theta=theta, t=temp_parameter).T # apply the function row wise of X
+
+    return H
+
+
 
 def compute_cost_function(X, Y, theta, lambda_factor, temp_parameter):
     """
