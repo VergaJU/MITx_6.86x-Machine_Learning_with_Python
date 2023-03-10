@@ -23,6 +23,7 @@ def compute_probabilities(X, theta, temp_parameter):
     """
     Computes, for each datapoint X[i], the probability that X[i] is labeled as j
     for j = 0, 1, ..., k-1
+    TODO: Test np.vectorize()
 
     Args:
         X - (n, d) NumPy array (n datapoints each with d features)
