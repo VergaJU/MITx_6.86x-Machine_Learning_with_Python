@@ -34,7 +34,7 @@ def compute_probabilities(X, theta, temp_parameter):
     #YOUR CODE HERE
     def denominator(x,theta,t):
         c = np.dot(np.max(theta, axis=0),x)/t # find max values in theta column wise, compute dot prod and devide by temp_parameter
-        theta_dot = np.e ** ((np.dot(theta,x)/t) - c) ## create vector wit e^exponent
+        theta_dot = np.e ** ((np.dot(theta,x)/t) - c) ## create vector with e^exponent
         denom = 1/np.sum(theta_dot) # compute denominator
         probs = denom * theta_dot # compute softmax for x
         return probs
@@ -61,8 +61,27 @@ def compute_cost_function(X, Y, theta, lambda_factor, temp_parameter):
     Returns
         c - the cost value (scalar)
     """
-    #YOUR CODE HERE
-    print(f"X is :\n{X}\nY is:\n{Y}\nTheta is:\n{theta}\nLambda factor is {lambda_factor}\n temp is {temp_parameter}")
+    #YOUR CODE HEREx[x!=0] = np.log(x[x!=0])
+    probs = compute_probabilities(X=X,theta=theta,temp_parameter=temp_parameter)
+    probs[probs !=0] = np.log(probs[probs!=0])
+    # create a 7x3 matrix
+    iverson = np.zeros((probs.shape[0], probs.shape[1]))
+    # create a row index array based on y
+    row_index = Y.reshape((-1, 1))
+    # create a column index array based on the range of columns in iverson
+    col_index = np.arange(iverson.shape[1])
+    col_index = col_index.reshape((-1,1))
+    # use the row and column index arrays to assign 1 to the corresponding elements of iverson
+    iverson[row_index, col_index] = 1
+    first_term = np.multiply(probs,iverson)
+    first_term = np.sum(first_term) * (-(1/X.shape[0]))
+    second_term = np.sum(theta**2)
+    second_term = (lambda_factor/2) * second_term
+    return first_term + second_term
+
+
+
+
 def run_gradient_descent_iteration(X, Y, theta, alpha, lambda_factor, temp_parameter):
     """
     Runs one step of batch gradient descent
