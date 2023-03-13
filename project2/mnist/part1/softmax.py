@@ -62,8 +62,7 @@ def compute_cost_function(X, Y, theta, lambda_factor, temp_parameter):
         c - the cost value (scalar)
     """
     #YOUR CODE HERE
-    raise NotImplementedError
-
+    print(f"X is :\n{X}\nY is:\n{Y}\nTheta is:\n{theta}\nLambda factor is {lambda_factor}\n temp is {temp_parameter}")
 def run_gradient_descent_iteration(X, Y, theta, alpha, lambda_factor, temp_parameter):
     """
     Runs one step of batch gradient descent
