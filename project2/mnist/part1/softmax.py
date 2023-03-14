@@ -99,27 +99,37 @@ def run_gradient_descent_iteration(X, Y, theta, alpha, lambda_factor, temp_param
     Returns:
         theta - (k, d) NumPy array that is the final value of parameters theta
     """
-    probs = compute_probabilities(X=X,theta=theta,temp_parameter=temp_parameter)
-    iverson = np.zeros((probs.shape[0], probs.shape[1]))
-    # create a row index array based on y
-    row_index = Y.reshape((-1, 1))
-    # create a column index array based on the range of columns in iverson
-    col_index = np.arange(iverson.shape[1])
-    col_index = col_index.reshape((-1,1))
-    # use the row and column index arrays to assign 1 to the corresponding elements of iverson
-    iverson[row_index, col_index] = 1
-    diff = iverson - probs
-    def first_term(diff_row):
-        first = np.sum(X * diff_row.reshape((-1,1)), axis =0)
-        return first
+    # probs = compute_probabilities(X=X,theta=theta,temp_parameter=temp_parameter)
+    # iverson = np.zeros((probs.shape[0], probs.shape[1]))
+    # # create a row index array based on y
+    # row_index = Y.reshape((-1, 1))
+    # # create a column index array based on the range of columns in iverson
+    # col_index = np.arange(iverson.shape[1])
+    # col_index = col_index.reshape((-1,1))
+    # # use the row and column index arrays to assign 1 to the corresponding elements of iverson
+    # iverson[row_index, col_index] = 1
+    # diff = iverson - probs
+    # def first_term(diff_row):
+    #     first = np.sum(X * diff_row.reshape((-1,1)), axis =0)
+    #     return first
+    #
+    # first = np.apply_along_axis(first_term, axis=1,arr=diff)
+    # first = first * (-(1)/(temp_parameter*X.shape[0]))
+    # second = lambda_factor * theta
+    # J = first + second
+    # newtheta = theta - (alpha * J)
+    # return newtheta
 
-    first = np.apply_along_axis(first_term, axis=1,arr=diff)
-    first = first * (-(1)/(temp_parameter*X.shape[0]))
-    second = lambda_factor * theta
-    J = first + second
-    newtheta = theta - (alpha * J)
-    return newtheta
-
+    # Version provided by course:
+    itemp=1./temp_parameter
+    num_examples = X.shape[0]
+    num_labels = theta.shape[0]
+    probabilities = compute_probabilities(X, theta, temp_parameter)
+    # M[i][j] = 1 if y^(j) = i and 0 otherwise.
+    M = sparse.coo_matrix(([1]*num_examples, (Y,range(num_examples))), shape=(num_labels,num_examples)).toarray()
+    non_regularized_gradient = np.dot(M-probabilities, X)
+    non_regularized_gradient *= -itemp/num_examples
+    return theta - alpha * (non_regularized_gradient + lambda_factor * theta)
 
 def update_y(train_y, test_y):
     """
