@@ -8,6 +8,7 @@ from svm import *
 from softmax import *
 from features import *
 from kernel import *
+import time
 
 #######################################################################
 # 1. Introduction
@@ -117,16 +118,18 @@ def run_softmax_on_MNIST(temp_parameter=1):
 
     # TODO: add your code here for the "Using the Current Model" question in tab 6.
     #      and print the test_error_mod3
+    train_y_mod3, test_y_mod3 = update_y(train_y, test_y)
+    test_error_mod3 = compute_test_error_mod3(train_y_mod3,test_y_mod3,theta,temp_parameter)
+    print(f"my test error mod3 is{test_error_mod3}")
     return test_error
 
 
-#print('softmax test_error=', run_softmax_on_MNIST(temp_parameter=1))
 
-# TODO: Find the error rate for temp_parameter = [.5, 1.0, 2.0]
-#      Remember to return the tempParameter to 1, and re-run run_softmax_on_MNIST
+print('softmax test_error=', run_softmax_on_MNIST(temp_parameter=1))
 
-for t in [.5,1,2]:
-    print('softmax test_error=', run_softmax_on_MNIST(temp_parameter=t))
+
+#for t in [.5,1,2]:
+#    print('softmax test_error=', run_softmax_on_MNIST(temp_parameter=t))
 
 temp_parameter = 1
 #######################################################################
