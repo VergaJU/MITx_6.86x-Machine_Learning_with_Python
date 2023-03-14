@@ -99,8 +99,27 @@ def run_gradient_descent_iteration(X, Y, theta, alpha, lambda_factor, temp_param
     Returns:
         theta - (k, d) NumPy array that is the final value of parameters theta
     """
-    #YOUR CODE HERE
-    raise NotImplementedError
+    probs = compute_probabilities(X=X,theta=theta,temp_parameter=temp_parameter)
+    iverson = np.zeros((probs.shape[0], probs.shape[1]))
+    # create a row index array based on y
+    row_index = Y.reshape((-1, 1))
+    # create a column index array based on the range of columns in iverson
+    col_index = np.arange(iverson.shape[1])
+    col_index = col_index.reshape((-1,1))
+    # use the row and column index arrays to assign 1 to the corresponding elements of iverson
+    iverson[row_index, col_index] = 1
+    diff = iverson - probs
+    def first_term(diff_row):
+        first = np.sum(X * diff_row.reshape((-1,1)), axis =0)
+        return first
+
+    first = np.apply_along_axis(first_term, axis=1,arr=diff)
+    first = first * (-(1)/(temp_parameter*X.shape[0]))
+    second = lambda_factor * theta
+    J = first + second
+    newtheta = theta - (alpha * J)
+    return newtheta
+
 
 def update_y(train_y, test_y):
     """
