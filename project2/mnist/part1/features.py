@@ -7,17 +7,21 @@ def project_onto_PC(X, pcs, n_components, feature_means):
     Given principal component vectors pcs = principal_components(X)
     this function returns a new data array in which each sample in X
     has been projected onto the first n_components principcal components.
+    :param X: nxd dataset
+    :param pcs: k- dimensional pca representation
+    :param n_components: number of component onto preject the dataset
+    :param feature_means: data drive feature means
+    :return:nxn_components matrix that is the projection of the features onto the n_components pcs
     """
-    # TODO: first center data using the feature_means
-    # TODO: Return the projection of the centered dataset
-    #       on the first n_components principal components.
-    #       This should be an array with dimensions: n x n_components.
+
     # Hint: these principal components = first n_components columns
     #       of the eigenvectors returned by principal_components().
     #       Note that each eigenvector is already be a unit-vector,
     #       so the projection may be done using matrix multiplication.
-    raise NotImplementedError
-
+    centered_X = X - feature_means
+    n_pcs = pcs[:,:n_components]
+    projection = np.matmul(centered_X,n_pcs)
+    return projection
 
 ### Functions which are already complete, for you to use ###
 
