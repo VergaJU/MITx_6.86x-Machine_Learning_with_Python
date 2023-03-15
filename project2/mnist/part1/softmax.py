@@ -36,9 +36,15 @@ def compute_probabilities(X, theta, temp_parameter):
         c = np.dot(np.max(theta, axis=0),x)/t # find max values in theta column wise, compute dot prod and devide by temp_parameter
         theta_dot = np.e ** ((np.dot(theta,x)/t) - c) ## create vector with e^exponent
         denom = 1/np.sum(theta_dot) # compute denominator
-        probs = denom * theta_dot # compute softmax for x
+        probs = np.dot(denom, theta_dot) # compute softmax for x
         return probs
 
+
+    # c = np.dot(np.max(theta,axis=0),X.T)/temp_parameter
+    # theta_dot = np.e ** ((np.dot(theta, X.T) / temp_parameter) - c)
+    # denom = 1 / np.sum(theta_dot)  # compute denominator
+    # probs = np.dot(denom, theta_dot)  # compute softmax for x
+    # H = probs
     H =np.apply_along_axis(denominator, axis=1, arr=X, theta=theta, t=temp_parameter).T # apply the function row wise of X
 
     return H
