@@ -227,8 +227,8 @@ def run_softmax_on_MNIST_pca(temp_parameter=1):
 #print('softmax test_error=', run_softmax_on_MNIST_pca(temp_parameter=1))
 
 
-n_components = 10
-## Cubic Kernel ##
+
+## Cubic K`ernel ##
 
 def run_softmax_on_MNIST_pca_cubic(temp_parameter=1):
     """
@@ -245,13 +245,15 @@ def run_softmax_on_MNIST_pca_cubic(temp_parameter=1):
     Returns:
         Final test error
     """
+    n_components = 10
     train_x, train_y, test_x, test_y = get_MNIST_data()
     train_x_centered, feature_means = center_data(train_x)
     pcs = principal_components(train_x_centered)
     train_pca = project_onto_PC(train_x, pcs, n_components, feature_means)
     test_pca = project_onto_PC(test_x, pcs, n_components, feature_means)
 
-    train_cubic = cubic_features(train_pcs)
+
+    train_cubic = cubic_features(train_pca)
     test_cubic = cubic_features(test_pca)
 
     theta, cost_function_history = softmax_regression(train_cubic, train_y, temp_parameter, alpha=0.3, lambda_factor=1.0e-4, k=10, num_iterations=150)
@@ -261,7 +263,7 @@ def run_softmax_on_MNIST_pca_cubic(temp_parameter=1):
     write_pickle_data(theta, "./theta_pca_cubic.pkl.gz")
     return test_error
 
-print('softmax test_error=', run_softmax_on_MNIST_pca_cubic(temp_parameter=1))
+#print('softmax test_error=', run_softmax_on_MNIST_pca_cubic(temp_parameter=1))
 
 
 # TODO: Find the 10-dimensional PCA representation of the training and test set
@@ -277,3 +279,47 @@ print('softmax test_error=', run_softmax_on_MNIST_pca_cubic(temp_parameter=1))
 
 # TODO: Train your softmax regression model using (train_cube, train_y)
 #       and evaluate its accuracy on (test_cube, test_y).
+
+
+from sklearn.svm import SVC
+from sklearn.metrics import zero_one_loss
+
+def skl_svm_poly():
+    """
+    SVM with cubic polynomial kernel made with sklearn
+    :return: error rate
+    """
+    n_components = 10
+    train_x, train_y, test_x, test_y = get_MNIST_data()
+    train_x_centered, feature_means = center_data(train_x)
+    pcs = principal_components(train_x_centered)
+    train_pca = project_onto_PC(train_x, pcs, n_components, feature_means)
+    test_pca = project_onto_PC(test_x, pcs, n_components, feature_means)
+    SVM = SVC(random_state=0, kernel='poly', degree=3)
+    SVM.fit(train_pca, train_y)
+    pred_y = SVM.predict(test_pca)
+    error_rate = zero_one_loss(test_y, pred_y)
+
+    return error_rate
+
+#print(f"SVM with polynomial kernel error rate: {skl_svm_poly()}")
+
+def skl_svm_rbf():
+    """
+    SVM with radial basis function kerlen made with sklearn
+    :return: error rate
+    """
+    n_components = 10
+    train_x, train_y, test_x, test_y = get_MNIST_data()
+    train_x_centered, feature_means = center_data(train_x)
+    pcs = principal_components(train_x_centered)
+    train_pca = project_onto_PC(train_x, pcs, n_components, feature_means)
+    test_pca = project_onto_PC(test_x, pcs, n_components, feature_means)
+    SVM = SVC(random_state=0, kernel='rbf')
+    SVM.fit(train_pca, train_y)
+    pred_y = SVM.predict(test_pca)
+    error_rate = zero_one_loss(test_y, pred_y)
+
+    return error_rate
+
+print(f"SVM with polynomial kernel error rate: {skl_svm_rbf()}")
