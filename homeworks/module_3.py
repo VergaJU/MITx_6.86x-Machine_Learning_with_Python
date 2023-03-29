@@ -45,10 +45,52 @@ weights_1 = np.array([[1,0],[0,1],[-1,0],[0,-1]])
 bias_1 = np.array([-1,-1,-1,-1])
 
 hidden_layer = relu(x, weights_1, bias_1)
-print(hidden_layer)
 weights_2 = np.array([[1,1,1,1],[-1,-1,-1,-1]])
 bias_2 = np.array([0,2])
 
 hidden_layer = relu(hidden_layer, weights_2, bias_2)
 
-print(softmax(hidden_layer))
+nodes = np.array([10,.0])
+
+x = 0.00000001
+while x < 0.0001:
+    x = softmax(nodes)[1]
+    nodes[1] = nodes[1] + 0.01
+
+#print(softmax(hidden_layer))
+
+#print(x)
+#print(nodes)
+
+X = np.array([1,1,0,1,1])
+h = 0
+c = 0
+W_fh=0
+W_fx=0
+W_ih=0
+W_ix=100
+W_oh=0
+W_ox=100
+W_ch=-100
+W_cx=50
+bf=-100
+bi=100
+bo=0
+bc=0
+def sigmoid(x):
+    return 1.0 / (1.0 + np.exp(-x))
+
+def lstm(x, h, c):
+    f= sigmoid((W_fh*h) + (W_fx * x) + bf)
+    i = sigmoid((W_ih * h) + (W_ix * x) + bi)
+    o = sigmoid((W_oh * h) + (W_ox * x) + bo)
+    c = (f * c) + (i * np.tanh((W_ch * h)+(W_cx*x)+bc))
+    h = o* np.tanh(c)
+    h = (np.rint(h)).astype(int)
+    return h, c
+
+
+for x in X:
+    h, c = lstm(x,h,c)
+    print(f"{h}")
+
