@@ -90,7 +90,11 @@ def lstm(x, h, c):
     return h, c
 
 
-for x in X:
-    h, c = lstm(x,h,c)
-    print(f"{h}")
+#for x in X:
+#    h, c = lstm(x,h,c)
+#    print(f"{h}")
 
+f = np.array([1,3,-1,1,-3])
+g1 = np.array([1,0,-1,0,0])
+g2 = np.array([0,1,0,-1,0])
+g3 = np.array([0,0,1,0,-1])
