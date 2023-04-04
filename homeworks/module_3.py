@@ -88,13 +88,54 @@ def lstm(x, h, c):
     h = o* np.tanh(c)
     h = (np.rint(h)).astype(int)
     return h, c
+#
+# ## Convolutional NN, 1D case
+#
+# #for x in X:
+# #    h, c = lstm(x,h,c)
+# #    print(f"{h}")
+#
+# f = np.array([1,3,-1,1,-3])
+# g = np.array([1,0,-1])
+# #g2 = np.array([0,1,0,-1,0])
+# #g3 = np.array([0,0,1,0,-1])
+#
+# #print(np.dot(g,f[:3]))
+# #print(np.dot(g,f[1:4]))
+# #print(np.dot(g,f[2:]))
+#
+# f = np.array([0,1,3,-1,1,-3,0])
+# #print(np.dot(g,f[:3]))
+# #print(np.dot(g,f[1:4]))
+# #print(np.dot(g,f[2:5]))
+# #print(np.dot(g,f[3:6]))
+# #print(np.dot(g,f[4:]))
+#
+# ## 2d case
+#
+# f = np.array([[1,2,1],[2,1,1],[1,1,1]])
+# g = np.array([[1,0.5],[0.5,1]])
+#
+# results = np.dot(f[:2,:2].flatten(),g.flatten())
+# results = np.append(results, np.dot(f[1:3,:2].flatten(),g.flatten()))
+# results = np.append(results, np.dot(f[:2,1:3].flatten(),g.flatten()))
+# results = np.append(results, np.dot(f[1:3,1:3].flatten(),g.flatten()))
+# results = np.reshape(results, (2,2))
+# print(np.sum(results))
 
+i = np.array([[1,0,2],[3,1,0],[0,0,4]])
+F = np.array([[1,0,],[0,1]])
 
-#for x in X:
-#    h, c = lstm(x,h,c)
-#    print(f"{h}")
+def convolut(patch,F):
+    results = np.dot(patch.flatten(), F.flatten())
+    return results
 
-f = np.array([1,3,-1,1,-3])
-g1 = np.array([1,0,-1,0,0])
-g2 = np.array([0,1,0,-1,0])
-g3 = np.array([0,0,1,0,-1])
+results = convolut(i[:2,:2],F)
+results = np.append(results, convolut(i[1:3,:2],F))
+results = np.append(results, convolut(i[:2,1:3],F))
+results = np.append(results, convolut(i[1:3,1:3],F))
+results = np.reshape(results, (2,2))
+results = np.maximum(0,results) # ReLu
+results = np.max(results) # pool
+print(results)
+
