@@ -70,7 +70,7 @@ class NeuralNetwork():
         ### Backpropagation ###
 
         # Compute gradients
-        output_layer_error = y - output #.5*(y - activated_output)**2# TODO
+        output_layer_error = y - output #.5*(y - activated_output)**2 commented the full error because it consider the derivative
         relu_derivative = np.vectorize(rectified_linear_unit_derivative)
         hidden_layer_error = relu_derivative(hidden_layer_weighted_input) # TODO (3 by 1 matrix)
         print(output_layer_error, hidden_layer_error)
