@@ -100,6 +100,7 @@ def main(lr=0.01, momentum=0.9, nesterov=False, n_epochs=30, optim="SGD"):
     ## Evaluate the model on test data
     loss, acc = run_epoch(test_batches, model.eval(), None)
     print('Test loss1: {:.6f}  accuracy1: {:.6f}  loss2: {:.6f}   accuracy2: {:.6f}'.format(loss[0], acc[0], loss[1], acc[1]))
+    return acc
 
 if __name__ == '__main__':
     # Specify seed for deterministic behavior, then shuffle. Do not change seed for official submissions to edx
@@ -108,12 +109,12 @@ if __name__ == '__main__':
     accuracies = []
     accuracies.append(main())
     batch_size = 34
-    accuracies.append(main())
+    accuracies.append(main()) # sligthly worse
     batch_size = 64
-    accuracies.append(main(lr=0.01, momentum=0))
-    accuracies.append(main(lr=0.1, momentum=0.9))
-    accuracies.append(main(optim="ADAM", lr=0.0001))
-    accuracies.append(main(n_epochs=50))
-    accuracies.append(main(nesterov=True))
+    accuracies.append(main(lr=0.01, momentum=0)) # worse
+    accuracies.append(main(lr=0.1, momentum=0.9)) # worse
+    accuracies.append(main(optim="ADAM", lr=0.0001)) #slightly worse
+    accuracies.append(main(n_epochs=50)) # worse
+    accuracies.append(main(nesterov=True)) # similar to first
     print(accuracies)
 
