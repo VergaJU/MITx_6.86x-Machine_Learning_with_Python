@@ -19,15 +19,58 @@ class CNN(nn.Module):
 
     def __init__(self, input_dimension):
         super(CNN, self).__init__()
-        # TODO initialize model layers here
+        # initialize first set of CONV => RELU => POOL layers
+        self.conv1 = nn.Conv2d(in_channels=1, out_channels=32,
+                            kernel_size=(3, 3))
+        self.relu1 = nn.ReLU()
+        self.maxpool1 = nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2))
+        # initialize second set of CONV => RELU => POOL layers
+        self.conv2 = nn.Conv2d(in_channels=32, out_channels=64,
+                            kernel_size=(3, 2))
+        self.relu2 = nn.ReLU()
+        self.maxpool2 = nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2))
+
+        # flatten
+        self.flatten = nn.Flatten()
+        # initialize first (and only) set of FC => RELU layers
+
+        self.fc1 = nn.Linear(in_features=3456, out_features=500)
+        self.dropout = nn.Dropout(p=0.5)
+
+        # classifier for the 2 outputs
+        self.fc2_1 = nn.Linear(in_features=500, out_features=num_classes)
+        self.fc2_2 = nn.Linear(in_features=500, out_features=num_classes)
+        self.output1 = nn.LogSoftmax(dim=1)
+        self.output2 = nn.LogSoftmax(dim=1)
+
 
     def forward(self, x):
+        # pass the input through our first set of CONV => RELU =>
+        # POOL layers
+        x = self.conv1(x)
+        x = self.relu1(x)
+        x = self.maxpool1(x)
+        # pass the output from the previous layer through the second
+        # set of CONV => RELU => POOL layers
+        x = self.conv2(x)
+        x = self.relu2(x)
+        x = self.maxpool2(x)
+        # flatten the output from the previous layer and pass it
+        # through our only set of FC => RELU layers
+        x = self.flatten(x)
+        x = self.fc1(x)
+        x = self.dropout(x)
+        # pass the output to our softmax classifier to get our output
+        # predictions
+        x1 = self.fc2_1(x)
+        x2 = self.fc2_2(x)
+        out_first_digit = self.output1(x1)
+        out_second_digit = self.output2(x2)
 
-        # TODO use model layers to predict the two digits
 
         return out_first_digit, out_second_digit
 
-def main():
+def main(lr=0.01, momentum=0.9, nesterov=False, n_epochs=30, optim="SGD"):
     X_train, y_train, X_test, y_test = U.get_data(path_to_data_dir, use_mini_dataset)
 
     # Split into train and dev
@@ -52,7 +95,7 @@ def main():
     model = CNN(input_dimension) # TODO add proper layers to CNN class above
 
     # Train
-    train_model(train_batches, dev_batches, model)
+    train_model(train_batches, dev_batches, model,lr, momentum, nesterov, n_epochs, optim)
 
     ## Evaluate the model on test data
     loss, acc = run_epoch(test_batches, model.eval(), None)
@@ -62,4 +105,15 @@ if __name__ == '__main__':
     # Specify seed for deterministic behavior, then shuffle. Do not change seed for official submissions to edx
     np.random.seed(12321)  # for reproducibility
     torch.manual_seed(12321)  # for reproducibility
-    main()
+    accuracies = []
+    accuracies.append(main())
+    batch_size = 34
+    accuracies.append(main())
+    batch_size = 64
+    accuracies.append(main(lr=0.01, momentum=0))
+    accuracies.append(main(lr=0.1, momentum=0.9))
+    accuracies.append(main(optim="ADAM", lr=0.0001))
+    accuracies.append(main(n_epochs=50))
+    accuracies.append(main(nesterov=True))
+    print(accuracies)
+
