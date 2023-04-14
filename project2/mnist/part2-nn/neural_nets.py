@@ -53,18 +53,17 @@ class NeuralNetwork():
         self.testing_points = [(1,1), (2,2), (3,3), (5,5), (10,10)]
 
     def train(self, x1, x2, y):
-        W = np.array(self.input_to_hidden_weights)
-        B = np.array(self.biases)
-        V = np.reshape(np.array(self.hidden_to_output_weights), B.shape)
 
         ### Forward propagation ###
         input_values = np.matrix([[x1],[x2]]) # 2 by 1
 
         # Calculate the input and activation of the hidden layer
-        hidden_layer_weighted_input = np.sum(np.array(input_values).flatten() * W, axis=1)# TODO (3 by 1 matrix)
+        hidden_layer_weighted_input = self.input_to_hidden_weights*input_values + self.biases #should be 3 by 1
         relu = np.vectorize(rectified_linear_unit)
-        hidden_layer_activation = relu(hidden_layer_weighted_input+B)# TODO (3 by 1 matrix)
-        output = np.sum((hidden_layer_activation * V))
+        hidden_layer_activation = relu(hidden_layer_weighted_input)# TODO (3 by 1 matrix)
+
+
+        output = self.hidden_to_output_weights * hidden_layer_activation # 1 by 1
         activated_output = output_layer_activation(output) # TODO
 
 
@@ -72,36 +71,35 @@ class NeuralNetwork():
         ### Backpropagation ###
 
         # Compute gradients
-        output_derivative = np.vectorize(output_layer_activation_derivative)
-        output_error = -(y - activated_output)
-        output_layer_error = output_derivative(output_error) * output_error
+        output_error = (activated_output- y)
+        output_layer_error = output_layer_activation_derivative(output) * output_error
 
         relu_derivative = np.vectorize(rectified_linear_unit_derivative)
-        hidden_layer_error = relu_derivative(hidden_layer_weighted_input) * output_layer_error # TODO (3 by 1 matrix)
+        hidden_layer_error = np.multiply((np.transpose(self.hidden_to_output_weights) * output_layer_error), relu_derivative(hidden_layer_weighted_input)) # 3 by 1
 
-        bias_gradients = self.learning_rate * output_layer_error * 1 # TODO
-        hidden_to_output_weight_gradients = self.learning_rate * hidden_layer_error# TODO
-        input_to_hidden_weight_gradients = self.learning_rate * W * output_layer_error # TODO
+        bias_gradients = hidden_layer_error # TODO
+        hidden_to_output_weight_gradients = np.transpose(hidden_layer_activation * output_layer_error)# TODO
+        input_to_hidden_weight_gradients = np.transpose(input_values * np.transpose(hidden_layer_error)) #  = [2 by 1] * [1 by 3] = [2 by 3]
 
     #     # Use gradients to adjust weights and biases using gradient descent
-        self.biases = self.biases - np.matrix(bias_gradients)# TODO
-        self.input_to_hidden_weights = self.input_to_hidden_weights - np.matrix(input_to_hidden_weight_gradients) # TODO
-        self.hidden_to_output_weights = self.hidden_to_output_weights - np.matrix(hidden_to_output_weight_gradients)# TODO
+        self.biases = self.biases - self.learning_rate * bias_gradients
+        self.input_to_hidden_weights =  self.input_to_hidden_weights - self.learning_rate * input_to_hidden_weight_gradients
+        self.hidden_to_output_weights =  self.hidden_to_output_weights - self.learning_rate * hidden_to_output_weight_gradients
+
 
 
 
     def predict(self, x1, x2):
 
-        input_values = np.matrix([[x1],[x2]])
-        W = np.array(self.input_to_hidden_weights)
-        B = np.array(self.biases)
-        V = np.reshape(np.array(self.hidden_to_output_weights), B.shape)
-        # Compute output for a single input(should be same as the forward propagation in training)
-        hidden_layer_weighted_input = np.sum(np.array(input_values).flatten() * W, axis=1) + B# TODO
-        relu = np.vectorize(rectified_linear_unit)
-        hidden_layer_activation = relu(hidden_layer_weighted_input)  # TODO (3 by 1 matrix)
-        output = np.sum((hidden_layer_activation) * V)
-        activated_output = output_layer_activation(output) # TODO
+        vec_relu = np.vectorize(rectified_linear_unit)
+
+        input_values = np.matrix([[x1],[x2]]) # 2 by 1
+
+        hidden_layer_weighted_input = self.input_to_hidden_weights*input_values + self.biases #should be 3 by 1
+        hidden_layer_activation = vec_relu(hidden_layer_weighted_input) # 3 by 1
+
+        output = self.hidden_to_output_weights * hidden_layer_activation # 1 by 1
+        activated_output = output_layer_activation(output) # 1 by 1
 
         return activated_output.item()
 
